@@ -45,12 +45,12 @@ type alias Hex =
 
 
 {-| Parse a hex string.
-    hairColorParser : Parser Field
-    hairColorParser =
-        succeed HairColor
-        |. symbol "hcl:"
-        |= maybe hex
-        |. zeroOrMore notSpace
+hairColorParser : Parser Field
+hairColorParser =
+succeed HairColor
+|. symbol "hcl:"
+|= maybe hex
+|. zeroOrMore notSpace
 -}
 hexParser : Parser Hex
 hexParser =
@@ -108,11 +108,11 @@ isHexChar c =
 
 
 {-| parse zeroOrMore characters
-    companyIdParser : Parser Field
-    companyIdParser =
-        succeed CompanyId
-        |. symbol "<cid:">
-        |= oneOrMore "cid" notSpace
+companyIdParser : Parser Field
+companyIdParser =
+succeed CompanyId
+|. symbol "<cid:">
+|= oneOrMore "cid" notSpace
 -}
 zeroOrMore : (Char -> Bool) -> Parser String
 zeroOrMore isOk =
@@ -122,12 +122,12 @@ zeroOrMore isOk =
 
 
 {-| parse oneOrMore characters
-    eyeColorParser : Parser Field
-    eyeColorParser =
-        succeed toEyeColor
-        |. symbol "ecl:"
-        |= maybe (oneOrMore "eye color alpha" Char.isAlpha)
-        |. zeroOrMore notSpace
+eyeColorParser : Parser Field
+eyeColorParser =
+succeed toEyeColor
+|. symbol "ecl:"
+|= maybe (oneOrMore "eye color alpha" Char.isAlpha)
+|. zeroOrMore notSpace
 -}
 oneOrMore : String -> (Char -> Bool) -> Parser String
 oneOrMore label isOk =
@@ -147,9 +147,10 @@ This is great for Maybe values you're filling.
     eyeColorParser : Parser Field
     eyeColorParser =
         succeed toEyeColor
-        |. symbol "ecl:"
-        |= maybe (oneOrMore "eye color alpha" Char.isAlpha)
-        |. zeroOrMore notSpace
+            |. symbol "ecl:"
+            |= maybe (oneOrMore "eye color alpha" Char.isAlpha)
+            |. zeroOrMore notSpace
+
 -}
 maybe : Parser String -> Parser (Maybe String)
 maybe parser =
