@@ -1,6 +1,9 @@
 .PHONY: build fmt test
 
 build:
+	elm make src/Day1.elm
+
+prod:
 	elm make --optimize src/Day1.elm
 
 fmt:
