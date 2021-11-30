@@ -15,7 +15,7 @@ import Parser exposing (..)
 --         better than just raw input.
 --   4. Remove this TODO block.
 
-{- Day 1: $TITLE
+{-| Day 1: $TITLE
 
 $INSTRUCTIONS
 -}
