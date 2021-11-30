@@ -1,4 +1,4 @@
-module Day1Tests exposing (..)
+module ExampleTests exposing (..)
 
 import Day1 exposing (..)
 import Debug exposing (..)

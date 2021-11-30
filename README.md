@@ -1,33 +1,35 @@
 # aocelm2021
-Advent of Code 2021 in Elm Lang
+
+Advent of Code 2021 in Elm Lang.
+
+## Install
+
+This project uses Elm 19. To run it, install that first.
+
+For optional development packages for formatting and testing, install:
+
+```
+npm install -g elm-test elm-format
+```
 
 ## Running
 
-Simple:
+Note: The day to run is hard-coded in Makefile.
 ```
-elm make src/Day01.elm
+make
 open index.html
 ```
 
-Another way would be to use elm reactor and navigate to the day in src.
-```
-elm reactor
-```
+And I develop, I just run `make` and once everything compiles, I refresh index.html in my browser.
 
 ## Formatting
 
 ```
-elm-format --yes src
+make fmt
 ```
 
 ## Tests
 
 ```
-npm install -g elm-test
-```
-
-Running
-
-```
-elm-test
+make test
 ```
