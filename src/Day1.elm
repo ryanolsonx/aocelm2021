@@ -2151,53 +2151,6 @@ part1Help maybeLast remaining timesInc =
                     part1Help (Just first) rest timesInc
 
 
-
---part1 : List Int -> Int
---part1 depths =
---    part1Recur Nothing (safeFirst depths) (safeTail depths) 0
---safeTail list =
---    Maybe.withDefault [] (List.tail list)
---safeFirst : List Int -> Int
---safeFirst list =
---    Maybe.withDefault 0 (List.head list)
---part1Recur : Maybe Int -> Int -> List Int -> Int -> Int
---part1Recur maybeLast curr remaining totalIncTimes =
---    if List.isEmpty remaining then
---        totalIncTimes
---    else
---        case maybeLast of
---            Just last ->
---                let
---                    nextTimes =
---                        (if curr > last then
---                            totalIncTimes + 1
---                         else
---                            totalIncTimes
---                        )
---                            |> Debug.log (String.fromInt last ++ " " ++ String.fromInt curr)
---                in
---                part1Recur (Just curr) (safeFirst remaining) (safeTail remaining) nextTimes
---            Nothing ->
---                part1Recur (Just curr) (safeFirst remaining) (safeTail remaining) totalIncTimes
---if Array.isEmpty remaining then
---    maxInc
---else
---    let
---        diff =
---            curr - last
---        next =
---            Maybe.withDefault 0 (Array.get 0 remaining)
---        nextRemaining =
---            Array.toList remaining
---                |> List.drop 1
---                |> Array.fromList
---    in
---    if diff > maxInc then
---        part1Recur curr next nextRemaining diff
---    else
---        part1Recur curr next nextRemaining maxInc
-
-
 part2 : List Int -> Maybe Int
 part2 input =
     Nothing
