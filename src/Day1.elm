@@ -89,8 +89,8 @@ main =
             { day = 1
             , examplePart1 = Just (part1 exampleInput)
             , part1 = Just (part1 realInput)
-            , examplePart2 = Nothing -- part2 exampleInput
-            , part2 = Nothing -- part2 realInput
+            , examplePart2 = Just (part2 exampleInput)
+            , part2 = Just (part2 realInput)
             }
     in
     Aoc.showResults results
@@ -2151,6 +2151,24 @@ part1Help maybeLast remaining timesInc =
                     part1Help (Just first) rest timesInc
 
 
-part2 : List Int -> Maybe Int
+part2 : List Int -> Int
 part2 input =
-    Nothing
+    toSlidingWindows input |> part1
+
+
+toSlidingWindows : List Int -> List Int
+toSlidingWindows input =
+    toSlidingWindowsHelp [] input
+
+
+toSlidingWindowsHelp : List Int -> List Int -> List Int
+toSlidingWindowsHelp windows remaining =
+    if List.length remaining < 3 then
+        windows
+
+    else
+        let
+            window =
+                List.foldl (+) 0 (List.take 3 remaining)
+        in
+        toSlidingWindowsHelp (windows ++ [ window ]) (List.drop 1 remaining)
