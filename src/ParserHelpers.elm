@@ -1,4 +1,12 @@
-module ParserHelpers exposing (Hex, hexParser, maybe, notSpace, oneOrMore, withoutErrors, zeroOrMore)
+module ParserHelpers exposing
+    ( Hex
+    , hexParser
+    , maybe
+    , notSpace
+    , oneOrMore
+    , runOnList
+    , zeroOrMore
+    )
 
 import Debug exposing (..)
 import Parser exposing (..)
@@ -8,36 +16,37 @@ type alias ParserResult a =
     Result (List DeadEnd) a
 
 
-withoutErrors : List (ParserResult a) -> List a
-withoutErrors results =
-    withoutErrorsRecur [] results
+runOnList : Parser a -> List String -> List a
+runOnList parser list =
+    list
+        |> List.map (Parser.run parser)
+        |> withoutErrors
 
 
-withoutErrorsRecur : List a -> List (ParserResult a) -> List a
-withoutErrorsRecur acc remaining =
-    if List.isEmpty remaining then
-        acc
+withoutErrors : List (Result (List DeadEnd) a) -> List a
+withoutErrors parserResults =
+    withoutErrorsHelp [] parserResults
 
-    else
-        let
-            rest =
-                Maybe.withDefault [] <| List.tail remaining
-        in
-        case List.head remaining of
-            Just first ->
-                case first of
-                    Ok v ->
-                        withoutErrorsRecur (acc ++ [ v ]) rest
 
-                    Err err ->
-                        let
-                            e =
-                                err |> log "!!! ERROR !!!"
-                        in
-                        withoutErrorsRecur acc rest
+withoutErrorsHelp : List a -> List (Result (List DeadEnd) a) -> List a
+withoutErrorsHelp items parserResults =
+    case parserResults of
+        [] ->
+            items
 
-            Nothing ->
-                acc
+        result :: remainingParserResults ->
+            case result of
+                Ok item ->
+                    withoutErrorsHelp
+                        (items ++ [ item ])
+                        remainingParserResults
+
+                Err err ->
+                    let
+                        _ =
+                            err |> log "!!! ERROR !!!"
+                    in
+                    withoutErrorsHelp items remainingParserResults
 
 
 type alias Hex =
@@ -56,55 +65,8 @@ hexParser : Parser Hex
 hexParser =
     succeed (\s -> "#" ++ s)
         |. symbol "#"
-        |= oneOrMore "hex" isHexChar
+        |= oneOrMore "hex" Char.isHexDigit
         |. zeroOrMore notSpace
-
-
-isHexChar : Char -> Bool
-isHexChar c =
-    if Char.isDigit c then
-        True
-
-    else
-        case c of
-            'a' ->
-                True
-
-            'b' ->
-                True
-
-            'c' ->
-                True
-
-            'd' ->
-                True
-
-            'e' ->
-                True
-
-            'f' ->
-                True
-
-            'A' ->
-                True
-
-            'B' ->
-                True
-
-            'C' ->
-                True
-
-            'D' ->
-                True
-
-            'E' ->
-                True
-
-            'F' ->
-                True
-
-            _ ->
-                False
 
 
 {-| parse zeroOrMore characters

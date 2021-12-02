@@ -33,8 +33,8 @@ type alias Part2State =
 
 
 part1 : List String -> String
-part1 commands =
-    commands
+part1 input =
+    input
         |> toCommands
         |> runCommands
         |> depthTimesHorizontal
@@ -79,8 +79,8 @@ depthTimesHorizontal { depth, horizontal } =
 
 
 part2 : List String -> String
-part2 commands =
-    commands
+part2 input =
+    input
         |> toCommands
         |> runCommandsUsingAim
         |> depthTimesHorizontal
@@ -127,10 +127,9 @@ runCommandsUsingAimHelp state commands =
 
 
 toCommands : List String -> List Command
-toCommands commands =
-    commands
-        |> List.map (Parser.run commandParser)
-        |> ParserHelpers.withoutErrors
+toCommands input =
+    input
+        |> ParserHelpers.runOnList commandParser
 
 
 commandParser : Parser Command
