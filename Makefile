@@ -1,14 +1,15 @@
-.PHONY: build fmt test
+.PHONY: run wbuild wfmt test
 
-build:
-	elm make src/Day1.elm
+run:
+	elm make src/Day1.elm --optimize --output=main.js
+	cat src/Day1.example.txt | node ./cli.js example
+	cat src/Day1.input.txt | node ./cli.js input
 
-prod:
-	elm make --optimize src/Day1.elm
+wbuild:
+	onchange 'src/*.elm' -- make
 
-fmt:
-	elm-format --yes src/Day1.elm
-	# elm-format --yes tests/Day1.elm
+wfmt:
+	onchange 'src/*.elm' -- elm-format --yes {{file}}
 
 test:
 	elm-test tests/Day1.elm
