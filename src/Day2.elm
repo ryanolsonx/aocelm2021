@@ -1,10 +1,7 @@
 module Day2 exposing (..)
 
-import Array exposing (Array)
-import Debug exposing (..)
 import Helpers
-import List
-import Parser exposing (..)
+import Parser exposing ((|.), (|=), Parser, int, oneOf, succeed, symbol)
 import ParserHelpers
 
 

@@ -1,10 +1,6 @@
 module Day1 exposing (..)
 
-import Array exposing (Array)
-import Debug exposing (..)
 import Helpers
-import List
-import Parser exposing (..)
 
 
 
