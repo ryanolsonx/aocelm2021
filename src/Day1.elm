@@ -8,48 +8,58 @@ import Parser exposing (..)
 
 
 
+-- STATE
+
+
+type alias State =
+    { timesIncreased : Int
+    , previousDepth : Int
+    }
+
+
+
 -- SOLUTION
 
 
 part1 : List String -> String
 part1 depths =
-    part1Help
-        { timesInc = 0
-        , previous = Nothing
-        , remainingDepths = Helpers.toInts depths
-        }
+    depths
+        |> Helpers.toInts
+        |> countTimesDepthIncreasesBetweenEach
         |> String.fromInt
 
 
-part1Help { timesInc, previous, remainingDepths } =
-    case remainingDepths of
+countTimesDepthIncreasesBetweenEach : List Int -> Int
+countTimesDepthIncreasesBetweenEach depths =
+    case depths of
         [] ->
-            timesInc
+            0
 
-        current :: remaining ->
-            part1Help
-                { timesInc =
-                    if didDepthIncrease timesInc previous current then
-                        timesInc + 1
+        depth :: remainingDepths ->
+            countTimesDepthIncreasesBetweenEachHelp
+                { timesIncreased = 0
+                , previousDepth = depth
+                }
+                remainingDepths
+
+
+countTimesDepthIncreasesBetweenEachHelp : State -> List Int -> Int
+countTimesDepthIncreasesBetweenEachHelp { timesIncreased, previousDepth } depths =
+    case depths of
+        [] ->
+            timesIncreased
+
+        depth :: remainingDepths ->
+            countTimesDepthIncreasesBetweenEachHelp
+                { timesIncreased =
+                    if depth > previousDepth then
+                        timesIncreased + 1
 
                     else
-                        timesInc
-                , previous = Just current
-                , remainingDepths = remaining
+                        timesIncreased
+                , previousDepth = depth
                 }
-
-
-didDepthIncrease timesInc previous current =
-    case previous of
-        Just prev ->
-            if current > prev then
-                True
-
-            else
-                False
-
-        Nothing ->
-            False
+                remainingDepths
 
 
 part2 : List String -> String
@@ -60,12 +70,13 @@ part2 input =
                 |> Helpers.toInts
                 |> toSlidingWindows
     in
-    part1Help
-        { timesInc = 0
-        , previous = Nothing
-        , remainingDepths = windows
-        }
-        |> String.fromInt
+    case windows of
+        [] ->
+            "0"
+
+        window :: remainingWindows ->
+            countTimesDepthIncreasesBetweenEach windows
+                |> String.fromInt
 
 
 toSlidingWindows : List Int -> List Int

@@ -9,7 +9,7 @@ import ParserHelpers
 
 
 
--- MODEL
+-- STATE
 
 
 type Command
@@ -44,6 +44,7 @@ part1 commands =
         |> String.fromInt
 
 
+moveUsingCommands : List Command -> Part1State
 moveUsingCommands commands =
     moveUsingCommandsHelp { depth = 0, horizontal = 0 } commands
 
@@ -89,6 +90,7 @@ part2 commands =
         |> String.fromInt
 
 
+aimAndMoveUsingCommands : List Command -> Part2State
 aimAndMoveUsingCommands commands =
     aimAndMoveUsingCommandsHelp
         { depth = 0
