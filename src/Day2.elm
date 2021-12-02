@@ -42,8 +42,8 @@ part1 input =
 
 
 runCommands : List Command -> Part1State
-runCommands commands =
-    runCommandsHelp { depth = 0, horizontal = 0 } commands
+runCommands =
+    runCommandsHelp { depth = 0, horizontal = 0 }
 
 
 runCommandsHelp : Part1State -> List Command -> Part1State
@@ -88,13 +88,12 @@ part2 input =
 
 
 runCommandsUsingAim : List Command -> Part2State
-runCommandsUsingAim commands =
+runCommandsUsingAim =
     runCommandsUsingAimHelp
         { depth = 0
         , horizontal = 0
         , aim = 0
         }
-        commands
 
 
 runCommandsUsingAimHelp : Part2State -> List Command -> Part2State
@@ -127,9 +126,8 @@ runCommandsUsingAimHelp state commands =
 
 
 toCommands : List String -> List Command
-toCommands input =
-    input
-        |> ParserHelpers.runOnList commandParser
+toCommands =
+    ParserHelpers.runOnList commandParser
 
 
 commandParser : Parser Command

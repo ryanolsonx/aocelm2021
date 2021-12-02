@@ -59,25 +59,17 @@ countTimesDepthIncreasesBetweenEachHelp { timesIncreased, previousDepth } depths
 
 
 part2 : List String -> String
-part2 input =
-    let
-        windows =
-            input
-                |> Helpers.toInts
-                |> toSlidingWindows
-    in
-    case windows of
-        [] ->
-            "0"
-
-        window :: remainingWindows ->
-            countTimesDepthIncreasesBetweenEach windows
-                |> String.fromInt
+part2 depths =
+    depths
+        |> Helpers.toInts
+        |> toSlidingWindows
+        |> countTimesDepthIncreasesBetweenEach
+        |> String.fromInt
 
 
 toSlidingWindows : List Int -> List Int
-toSlidingWindows input =
-    toSlidingWindowsHelp [] input
+toSlidingWindows =
+    toSlidingWindowsHelp []
 
 
 toSlidingWindowsHelp : List Int -> List Int -> List Int
@@ -90,7 +82,9 @@ toSlidingWindowsHelp windows remaining =
             window =
                 List.foldl (+) 0 (List.take 3 remaining)
         in
-        toSlidingWindowsHelp (windows ++ [ window ]) (List.drop 1 remaining)
+        toSlidingWindowsHelp
+            (windows ++ [ window ])
+            (List.drop 1 remaining)
 
 
 
