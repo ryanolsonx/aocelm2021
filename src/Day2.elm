@@ -39,18 +39,18 @@ part1 : List String -> String
 part1 commands =
     commands
         |> toCommands
-        |> moveUsingCommands
+        |> runCommands
         |> depthTimesHorizontal
         |> String.fromInt
 
 
-moveUsingCommands : List Command -> Part1State
-moveUsingCommands commands =
-    moveUsingCommandsHelp { depth = 0, horizontal = 0 } commands
+runCommands : List Command -> Part1State
+runCommands commands =
+    runCommandsHelp { depth = 0, horizontal = 0 } commands
 
 
-moveUsingCommandsHelp : Part1State -> List Command -> Part1State
-moveUsingCommandsHelp state commands =
+runCommandsHelp : Part1State -> List Command -> Part1State
+runCommandsHelp state commands =
     case commands of
         [] ->
             state
@@ -74,7 +74,7 @@ moveUsingCommandsHelp state commands =
                                 | depth = state.depth - x
                             }
             in
-            moveUsingCommandsHelp nextState remainingCommands
+            runCommandsHelp nextState remainingCommands
 
 
 depthTimesHorizontal { depth, horizontal } =
@@ -85,14 +85,14 @@ part2 : List String -> String
 part2 commands =
     commands
         |> toCommands
-        |> aimAndMoveUsingCommands
+        |> runCommandsUsingAim
         |> depthTimesHorizontal
         |> String.fromInt
 
 
-aimAndMoveUsingCommands : List Command -> Part2State
-aimAndMoveUsingCommands commands =
-    aimAndMoveUsingCommandsHelp
+runCommandsUsingAim : List Command -> Part2State
+runCommandsUsingAim commands =
+    runCommandsUsingAimHelp
         { depth = 0
         , horizontal = 0
         , aim = 0
@@ -100,8 +100,8 @@ aimAndMoveUsingCommands commands =
         commands
 
 
-aimAndMoveUsingCommandsHelp : Part2State -> List Command -> Part2State
-aimAndMoveUsingCommandsHelp state commands =
+runCommandsUsingAimHelp : Part2State -> List Command -> Part2State
+runCommandsUsingAimHelp state commands =
     case commands of
         [] ->
             state
@@ -122,7 +122,7 @@ aimAndMoveUsingCommandsHelp state commands =
                         Up x ->
                             { state | aim = state.aim - x }
             in
-            aimAndMoveUsingCommandsHelp nextState remainingCommands
+            runCommandsUsingAimHelp nextState remainingCommands
 
 
 
