@@ -9,7 +9,7 @@ import ParserHelpers
 
 
 
--- SOLUTION
+-- MODEL
 
 
 type Command
@@ -18,50 +18,120 @@ type Command
     | Up Int
 
 
-type alias State =
+type alias Part1State =
     { depth : Int
     , horizontal : Int
     }
 
 
+type alias Part2State =
+    { depth : Int
+    , horizontal : Int
+    , aim : Int
+    }
+
+
+
+-- SOLUTION
+
+
 part1 : List String -> String
 part1 commands =
     commands
-        |> List.map (Parser.run commandParser)
-        |> ParserHelpers.withoutErrors
-        |> runCommands { depth = 0, horizontal = 0 }
+        |> toCommands
+        |> moveUsingCommands
+        |> depthTimesHorizontal
         |> String.fromInt
 
 
-runCommands : State -> List Command -> Int
-runCommands state commands =
+moveUsingCommands commands =
+    moveUsingCommandsHelp { depth = 0, horizontal = 0 } commands
+
+
+moveUsingCommandsHelp : Part1State -> List Command -> Part1State
+moveUsingCommandsHelp state commands =
     case commands of
         [] ->
-            state.depth * state.horizontal
+            state
 
-        cmd :: remainingCommands ->
+        command :: remainingCommands ->
             let
                 nextState =
-                    case cmd of
-                        Forward amt ->
-                            { state | horizontal = state.horizontal + amt }
+                    case command of
+                        Forward x ->
+                            { state
+                                | horizontal = state.horizontal + x
+                            }
 
-                        Down amt ->
-                            { state | depth = state.depth + amt }
+                        Down x ->
+                            { state
+                                | depth = state.depth + x
+                            }
 
-                        Up amt ->
-                            { state | depth = state.depth - amt }
+                        Up x ->
+                            { state
+                                | depth = state.depth - x
+                            }
             in
-            runCommands nextState remainingCommands
+            moveUsingCommandsHelp nextState remainingCommands
+
+
+depthTimesHorizontal { depth, horizontal } =
+    depth * horizontal
 
 
 part2 : List String -> String
 part2 commands =
-    "TODO"
+    commands
+        |> toCommands
+        |> aimAndMoveUsingCommands
+        |> depthTimesHorizontal
+        |> String.fromInt
 
 
-parseCommand cmd =
-    run commandParser cmd
+aimAndMoveUsingCommands commands =
+    aimAndMoveUsingCommandsHelp
+        { depth = 0
+        , horizontal = 0
+        , aim = 0
+        }
+        commands
+
+
+aimAndMoveUsingCommandsHelp : Part2State -> List Command -> Part2State
+aimAndMoveUsingCommandsHelp state commands =
+    case commands of
+        [] ->
+            state
+
+        command :: remainingCommands ->
+            let
+                nextState =
+                    case command of
+                        Forward x ->
+                            { state
+                                | horizontal = state.horizontal + x
+                                , depth = state.depth + state.aim * x
+                            }
+
+                        Down x ->
+                            { state | aim = state.aim + x }
+
+                        Up x ->
+                            { state | aim = state.aim - x }
+            in
+            aimAndMoveUsingCommandsHelp nextState remainingCommands
+
+
+
+-- HELPERS
+
+
+toCommands : List String -> List Command
+toCommands commands =
+    commands
+        |> List.map (Parser.run commandParser)
+        |> ParserHelpers.withoutErrors
 
 
 commandParser : Parser Command
