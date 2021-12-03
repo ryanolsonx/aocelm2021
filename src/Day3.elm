@@ -18,39 +18,37 @@ type alias State =
     }
 
 
-type alias BinaryResult =
-    { zeros : Int
-    , ones : Int
-    }
-
-
 
 -- SOLUTION
 
 
 part1 : List String -> String
 part1 input =
-    getGammaRate input
-        * getEpsilonRate input
+    let
+        length =
+            String.length <| Maybe.withDefault "" <| List.head input
+    in
+    getGammaRate input length
+        * getEpsilonRate input length
         |> String.fromInt
 
 
-getGammaRate : List String -> Int
-getGammaRate input =
+getGammaRate : List String -> Int -> Int
+getGammaRate input length =
     getRateHelp
         { input = input
-        , binaryLength = String.length <| Maybe.withDefault "" <| List.head input
+        , binaryLength = length
         , rate = ""
         , mostCommon = True
         }
         0
 
 
-getEpsilonRate : List String -> Int
-getEpsilonRate input =
+getEpsilonRate : List String -> Int -> Int
+getEpsilonRate input length =
     getRateHelp
         { input = input
-        , binaryLength = String.length <| Maybe.withDefault "" <| List.head input
+        , binaryLength = length
         , rate = ""
         , mostCommon = False
         }
@@ -64,25 +62,21 @@ getRateHelp state index =
 
     else
         let
-            res =
-                countZerosAndOnesAtIndex index state.input
+            mostCommonBit =
+                mostCommonBitAtIndex index state.input
 
             next =
                 if state.mostCommon then
-                    if res.zeros > res.ones then
-                        "0"
+                    mostCommonBit
 
-                    else
-                        "1"
-
-                else if res.zeros < res.ones then
-                    "0"
+                else if mostCommonBit == 1 then
+                    0
 
                 else
-                    "1"
+                    1
         in
         getRateHelp
-            { state | rate = state.rate ++ next }
+            { state | rate = state.rate ++ String.fromInt next }
             (index + 1)
 
 
@@ -103,20 +97,22 @@ binaryStringToIntHelp result index binaryString =
         binaryStringToIntHelp nextResult (index + 1) binaryString
 
 
-countZerosAndOnesAtIndex : Int -> List String -> BinaryResult
-countZerosAndOnesAtIndex index input =
-    input
-        |> List.map (intAt index)
-        |> countZerosAndOnes
-
-
-countZerosAndOnes : List Int -> BinaryResult
-countZerosAndOnes ns =
+mostCommonBitAtIndex : Int -> List String -> Int
+mostCommonBitAtIndex index input =
     let
         ones =
-            List.foldl (+) 0 ns
+            input
+                |> List.map (intAt index)
+                |> List.foldl (+) 0
+
+        zeros =
+            List.length input - ones
     in
-    { zeros = List.length ns - ones, ones = ones }
+    if ones > zeros then
+        1
+
+    else
+        0
 
 
 intAt index str =
