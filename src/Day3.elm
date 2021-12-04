@@ -7,119 +7,118 @@ import ParserHelpers
 
 
 
--- MODEL
-
-
-type alias State =
-    { input : List String
-    , rate : String
-    , binaryLength : Int
-    , mostCommon : Bool
-    }
-
-
-
 -- SOLUTION
 
 
 part1 : List String -> String
-part1 input =
-    let
-        length =
-            String.length <| Maybe.withDefault "" <| List.head input
-    in
-    getGammaRate input length
-        * getEpsilonRate input length
+part1 binaryNumbers =
+    getGammaRate binaryNumbers
+        * getEpsilonRate binaryNumbers
         |> String.fromInt
 
 
-getGammaRate : List String -> Int -> Int
-getGammaRate input length =
-    getRateHelp
-        { input = input
-        , binaryLength = length
-        , rate = ""
-        , mostCommon = True
-        }
-        0
+getGammaRate : List String -> Int
+getGammaRate binaryNumbers =
+    getGammaRateHelp (getStringLength binaryNumbers) 0 "" binaryNumbers
 
 
-getEpsilonRate : List String -> Int -> Int
-getEpsilonRate input length =
-    getRateHelp
-        { input = input
-        , binaryLength = length
-        , rate = ""
-        , mostCommon = False
-        }
-        0
-
-
-getRateHelp : State -> Int -> Int
-getRateHelp state index =
-    if index == state.binaryLength then
-        binaryStringToInt state.rate
+getGammaRateHelp : Int -> Int -> String -> List String -> Int
+getGammaRateHelp length index gammaRateAcc binaryNumbers =
+    if index >= length then
+        binaryToInt gammaRateAcc
 
     else
         let
-            mostCommonBit =
-                mostCommonBitAtIndex index state.input
-
-            next =
-                if state.mostCommon then
-                    mostCommonBit
-
-                else if mostCommonBit == 1 then
-                    0
-
-                else
-                    1
+            mostCommon =
+                binaryNumbers
+                    |> getBitsAt index
+                    |> getMostCommon
+                    |> String.fromInt
         in
-        getRateHelp
-            { state | rate = state.rate ++ String.fromInt next }
-            (index + 1)
+        getGammaRateHelp length (index + 1) (gammaRateAcc ++ mostCommon) binaryNumbers
 
 
-binaryStringToInt : String -> Int
-binaryStringToInt binaryString =
-    binaryStringToIntHelp 0 0 (String.reverse binaryString)
+getBitsAt index binaryNumbers =
+    binaryNumbers
+        |> List.map (getAt index)
 
 
-binaryStringToIntHelp result index binaryString =
+getAt index str =
+    str
+        |> String.slice index (index + 1)
+        |> String.toInt
+        |> Maybe.withDefault 0
+
+
+getStringLength : List String -> Int
+getStringLength str =
+    List.head str
+        |> Maybe.withDefault ""
+        |> String.length
+
+
+binaryToInt : String -> Int
+binaryToInt binaryString =
+    binaryToIntHelp 0 0 (String.reverse binaryString)
+
+
+binaryToIntHelp result index binaryString =
     if index >= String.length binaryString then
         result
 
     else
         let
             nextResult =
-                result + (intAt index binaryString * 2 ^ index)
+                result + (getAt index binaryString * 2 ^ index)
         in
-        binaryStringToIntHelp nextResult (index + 1) binaryString
+        binaryToIntHelp nextResult (index + 1) binaryString
 
 
-mostCommonBitAtIndex : Int -> List String -> Int
-mostCommonBitAtIndex index input =
+getMostCommon : List Int -> Int
+getMostCommon ns =
     let
-        ones =
-            input
-                |> List.map (intAt index)
-                |> List.foldl (+) 0
-
-        zeros =
-            List.length input - ones
+        sum =
+            List.foldl (+) 0 ns
     in
-    if ones > zeros then
+    if sum >= List.length ns - sum then
         1
 
     else
         0
 
 
-intAt index str =
-    str
-        |> String.slice index (index + 1)
-        |> String.toInt
-        |> Maybe.withDefault 0
+getEpsilonRate : List String -> Int
+getEpsilonRate binaryNumbers =
+    getEpsilonRateHelp (getStringLength binaryNumbers) 0 "" binaryNumbers
+
+
+getEpsilonRateHelp : Int -> Int -> String -> List String -> Int
+getEpsilonRateHelp length index gammaRateAcc binaryNumbers =
+    if index >= length then
+        binaryToInt gammaRateAcc
+
+    else
+        let
+            mostCommon =
+                binaryNumbers
+                    |> getBitsAt index
+                    |> getLeastCommon
+                    |> String.fromInt
+        in
+        getEpsilonRateHelp length (index + 1) (gammaRateAcc ++ mostCommon) binaryNumbers
+
+
+getLeastCommon : List Int -> Int
+getLeastCommon ns =
+    let
+        sum =
+            List.foldl (+) 0 ns
+    in
+    if sum < List.length ns - sum then
+        1
+
+    else
+        0
 
 
 part2 : List String -> String
