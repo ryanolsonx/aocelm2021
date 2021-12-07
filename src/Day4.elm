@@ -20,6 +20,12 @@ type Square
     | Invalid
 
 
+type alias ParseBoardState =
+    { boards : List Board
+    , currentBoard : Board
+    }
+
+
 type alias PlayResult =
     { winningBoard : Board
     , lastDraw : Int
@@ -27,7 +33,7 @@ type alias PlayResult =
 
 
 
--- SOLUTION
+-- PART 1
 
 
 part1 : List String -> String
@@ -48,17 +54,21 @@ part1 input =
             "Failure: could not find a winning board"
 
 
+
+-- PARSE INPUT
+
+
 getDrawsFromInput : List String -> List Int
 getDrawsFromInput input =
-    case input of
-        [] ->
-            []
-
-        draws :: _ ->
+    case List.head input of
+        Just draws ->
             draws
                 |> String.split ","
                 |> List.map String.toInt
                 |> List.map (Maybe.withDefault 0)
+
+        Nothing ->
+            []
 
 
 getBoardsFromInput : List String -> List Board
@@ -67,10 +77,12 @@ getBoardsFromInput input =
         boardsLines =
             List.drop 2 input
     in
-    getBoardsFromInputHelp { boards = [], currentBoard = [] } boardsLines
+    getBoardsFromInputHelp
+        { boards = [], currentBoard = [] }
+        boardsLines
 
 
-getBoardsFromInputHelp : { boards : List Board, currentBoard : Board } -> List String -> List Board
+getBoardsFromInputHelp : ParseBoardState -> List String -> List Board
 getBoardsFromInputHelp state input =
     case input of
         [] ->
@@ -101,6 +113,12 @@ parseBoardLine line =
         |> List.map toInitialSquare
 
 
+whitespace : Regex.Regex
+whitespace =
+    Maybe.withDefault Regex.never <|
+        Regex.fromString "\\s+"
+
+
 toInitialSquare : Maybe Int -> Square
 toInitialSquare maybeN =
     case maybeN of
@@ -111,10 +129,8 @@ toInitialSquare maybeN =
             Invalid
 
 
-whitespace : Regex.Regex
-whitespace =
-    Maybe.withDefault Regex.never <|
-        Regex.fromString "\\s+"
+
+-- PLAY BINGO
 
 
 playUntilWinner : List Board -> List Int -> Maybe PlayResult
@@ -189,15 +205,10 @@ hasBingoRow board =
     let
         bingoRowsCount =
             board
-                |> List.filter hasRowAllMarked
+                |> List.filter (List.all isMarked)
                 |> List.length
     in
     bingoRowsCount > 0
-
-
-hasRowAllMarked boardLine =
-    boardLine
-        |> List.all isMarked
 
 
 isMarked square =
@@ -205,10 +216,7 @@ isMarked square =
         Marked _ ->
             True
 
-        Unmarked _ ->
-            False
-
-        Invalid ->
+        _ ->
             False
 
 
@@ -217,10 +225,7 @@ isUnmarked square =
         Unmarked _ ->
             True
 
-        Marked _ ->
-            False
-
-        Invalid ->
+        _ ->
             False
 
 
@@ -251,6 +256,10 @@ hasBingoColumnHelp length index board =
             hasBingoColumnHelp length (index + 1) board
 
 
+
+-- RESULT CALCULATION
+
+
 sumOfUnmarked board =
     sumOfUnmarkedHelp 0 board
 
@@ -276,11 +285,12 @@ getUnmarkedN square =
         Unmarked n ->
             n
 
-        Marked _ ->
+        _ ->
             0
 
-        Invalid ->
-            0
+
+
+-- PART 2
 
 
 part2 : List String -> String

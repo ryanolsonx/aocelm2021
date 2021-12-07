@@ -3,7 +3,7 @@
 run:
 	elm make src/Day4.elm --output=main.js
 	cat src/Day4.example.txt | node ./cli.js example
-#	cat src/Day4.input.txt | node ./cli.js input
+	cat src/Day4.input.txt | node ./cli.js input
 
 wbuild:
 	onchange 'src/*.elm' -- make
