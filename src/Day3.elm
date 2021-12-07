@@ -12,9 +12,12 @@ import ParserHelpers
 
 part1 : List String -> String
 part1 binaryNumbers =
-    getGammaRate binaryNumbers
-        * getEpsilonRate binaryNumbers
-        |> String.fromInt
+    getPowerConsumption binaryNumbers |> String.fromInt
+
+
+getPowerConsumption : List String -> Int
+getPowerConsumption binaryNumbers =
+    getGammaRate binaryNumbers * getEpsilonRate binaryNumbers
 
 
 getGammaRate : List String -> Int
@@ -122,8 +125,111 @@ getLeastCommon ns =
 
 
 part2 : List String -> String
-part2 input =
-    "TODO"
+part2 binaryNumbers =
+    getLifeSupportRating binaryNumbers |> String.fromInt
+
+
+getLifeSupportRating binaryNumbers =
+    getOxygenGeneratorRating binaryNumbers * getC02ScrubberRating binaryNumbers
+
+
+getOxygenGeneratorRating : List String -> Int
+getOxygenGeneratorRating binaryNumbers =
+    getOxygenGeneratorRatingHelp
+        { length = getStringLength binaryNumbers
+        , bitIndex = 0
+        , result = ""
+        }
+        binaryNumbers
+        |> binaryToInt
+
+
+type alias OxygenGeneratorState =
+    { length : Int
+    , bitIndex : Int
+    , result : String
+    }
+
+
+getOxygenGeneratorRatingHelp : OxygenGeneratorState -> List String -> String
+getOxygenGeneratorRatingHelp state binaryNumbers =
+    if List.length binaryNumbers == 1 then
+        Maybe.withDefault "" (List.head binaryNumbers)
+
+    else if state.bitIndex >= state.length then
+        -- Couldn't find it...
+        ""
+
+    else
+        let
+            nextBit =
+                binaryNumbers
+                    |> getBitsAt state.bitIndex
+                    |> getMostCommon
+                    |> String.fromInt
+
+            nextResult =
+                state.result ++ nextBit
+
+            matching =
+                binaryNumbers
+                    |> List.filter (String.startsWith nextResult)
+        in
+        getOxygenGeneratorRatingHelp
+            { state
+                | bitIndex = state.bitIndex + 1
+                , result = nextResult
+            }
+            matching
+
+
+getC02ScrubberRating binaryNumbers =
+    getC02ScrubberRatingHelp
+        { length = getStringLength binaryNumbers
+        , bitIndex = 0
+        , result = ""
+        }
+        binaryNumbers
+        |> binaryToInt
+
+
+type alias C02ScrubberState =
+    { length : Int
+    , bitIndex : Int
+    , result : String
+    }
+
+
+getC02ScrubberRatingHelp : C02ScrubberState -> List String -> String
+getC02ScrubberRatingHelp state binaryNumbers =
+    if List.length binaryNumbers == 1 then
+        Maybe.withDefault "" (List.head binaryNumbers)
+
+    else if state.bitIndex >= state.length then
+        -- Couldn't find it...
+        ""
+
+    else
+        let
+            nextBit =
+                binaryNumbers
+                    |> getBitsAt state.bitIndex
+                    |> getLeastCommon
+                    |> String.fromInt
+
+            nextResult =
+                state.result ++ nextBit
+
+            matching =
+                binaryNumbers
+                    |> List.filter (String.startsWith nextResult)
+        in
+        getC02ScrubberRatingHelp
+            { state
+                | bitIndex = state.bitIndex + 1
+                , result = nextResult
+            }
+            matching
 
 
 
